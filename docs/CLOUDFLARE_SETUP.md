@@ -32,7 +32,9 @@ Hệ thống sử dụng tính năng **Email Routing** của Cloudflare để "h
 1. **Thêm bản ghi DMARC:** Tại menu **DNS** > **Records** của tên miền, thêm bản ghi mới:
    - Type: `TXT`
    - Name: `_dmarc`
-   - Content: `v=DMARC1; p=none; sp=none;`
+   - Content: `v=DMARC1; p=quarantine;` *(sử dụng quarantine để chống mạo danh và tăng điểm uy tín)*
+   
+   *(Lưu ý: Đối với bản ghi SPF `v=spf1...`, nên dùng đuôi `-all` hoặc `~all`)*
 2. Trở lại màn hình chính của tài khoản Cloudflare, vào mục **Workers & Pages**.
 3. Chọn ứng dụng Worker có tên là `agentic-inbox`.
 4. Chuyển sang tab **Settings** (Cài đặt) > **Bindings**.
