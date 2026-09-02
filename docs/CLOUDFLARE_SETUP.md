@@ -49,4 +49,51 @@ Hệ thống sử dụng tính năng **Email Routing** của Cloudflare để "h
 Trong mã nguồn của bạn có định nghĩa biến `DOMAINS` và `EMAIL_ADDRESSES` để phục vụ cho các logic nhận diện nội bộ của Worker.
 - Đừng quên vào Cloudflare Dashboard > `agentic-inbox` > **Settings** > **Variables and Secrets** để bổ sung tên miền mới của bạn vào biến môi trường này nếu cần.
 
+---
+
+## 4. Kiểm tra Khả năng Gửi thư (Deliverability Test)
+Sau khi hoàn tất cấu hình DNS, hãy dùng công cụ miễn phí **Mail-Tester** để kiểm tra xem email có bị đánh dấu Spam hay không.
+
+1. Truy cập [mail-tester.com](https://www.mail-tester.com/).
+2. Copy địa chỉ email tạm thời mà trang web cung cấp cho bạn (ví dụ: `test-xyz@srv1.mail-tester.com`).
+3. Mở giao diện Agentic Email, soạn một email mới và gửi đến địa chỉ vừa copy.
+4. Quay lại mail-tester.com và bấm **Then check your score** để xem kết quả.
+
+| Điểm | Đánh giá |
+|------|----------|
+| **9-10/10** | ✅ Hoàn hảo — Email sẽ vào thẳng Inbox |
+| **7-8/10** | ⚠️ Khá tốt — Có thể cần tinh chỉnh nhỏ |
+| **Dưới 7** | ❌ Có vấn đề — Kiểm tra lại SPF/DKIM/DMARC |
+
+> [!TIP]
+> Hãy đảm bảo điểm số đạt ít nhất **9/10** trước khi gửi email thật đến khách hàng.
+
+---
+
+## 5. Khởi động Uy tín với Gmail (Gmail Warm-up)
+Gmail rất khắt khe với tên miền mới chưa có lịch sử gửi thư. Ngay cả khi Mail-Tester cho **10/10**, Gmail vẫn có thể chặn email nếu tên miền quá mới. Hãy làm các bước sau để "phá băng":
+
+1. **Đăng ký Google Postmaster Tools (Miễn phí):**
+   - Truy cập [Google Postmaster Tools](https://postmaster.google.com/).
+   - Thêm tên miền của bạn vào và xác minh quyền sở hữu (thêm 1 bản ghi TXT vào DNS).
+   - Sau khi xác minh, Google sẽ "biết" tên miền của bạn và dần nới lỏng bộ lọc spam.
+
+2. **Thêm vào Danh bạ Gmail:**
+   - Mở [Google Contacts](https://contacts.google.com/), tạo một liên hệ mới với email là địa chỉ bạn dùng để gửi (ví dụ: `admin@ten-mien.com`).
+   - Gmail tin tưởng email từ người nằm trong danh bạ hơn.
+
+3. **Dùng chiến thuật Reply-first (Trả lời trước):**
+   - Từ Gmail, gửi 1 email đến `@ten-mien.com` trước.
+   - Sau đó dùng Agentic Email **Reply lại** email đó.
+   - Gmail tin tưởng email Reply trong cuộc hội thoại có sẵn hơn rất nhiều so với email mới hoàn toàn.
+
+4. **Gửi thử sang hòm thư khác trước:**
+   - Thử gửi email sang Outlook/Yahoo/Hotmail trước để xác nhận hệ thống hoạt động bình thường.
+   - Sau vài ngày gửi email hợp lệ, Gmail sẽ tự động nâng uy tín tên miền của bạn.
+
+> [!IMPORTANT]
+> Quá trình xây dựng uy tín tên miền mới với Gmail thường mất từ **vài ngày đến 1-2 tuần**. Hãy kiên nhẫn và tránh gửi email hàng loạt trong giai đoạn đầu.
+
+---
+
 🎉 **Hoàn tất! Hệ thống của bạn đã sẵn sàng nhận và gửi email bằng tên miền mới!**
