@@ -124,58 +124,24 @@ export default function Sidebar() {
 
 	return (
 		<aside className="h-full w-64 bg-kumo-recessed flex flex-col shrink-0 border-r border-kumo-line">
-			{/* Back + identity */}
-			<div className="px-4 pt-4 pb-1">
-				<button
-					type="button"
-					onClick={() => {
-						navigate("/");
-						closeSidebar();
-					}}
-					className="flex items-center gap-1.5 text-kumo-subtle text-sm hover:text-kumo-default transition-colors mb-2.5 cursor-pointer bg-transparent border-0 p-0"
-				>
-					<CaretLeftIcon size={14} />
-					<span>Mailboxes</span>
-				</button>
+			{/* Brand title */}
+			<div className="px-4 pt-4 pb-2">
+				<div className="text-base font-bold text-kumo-default tracking-tight">
+					Whichapp - Agentic Email
+				</div>
+			</div>
+
+			{/* Current mailbox identity */}
+			<div className="px-4 pb-1">
 				<div className="px-1">
-					<div className="text-base font-semibold text-kumo-default truncate">
+					<div className="text-sm font-semibold text-kumo-default truncate">
 						{displayName}
 					</div>
-					<div className="text-sm text-kumo-subtle truncate mt-0.5">
+					<div className="text-xs text-kumo-subtle truncate mt-0.5">
 						{currentMailbox?.email || mailboxId}
 					</div>
 				</div>
 			</div>
-
-			{/* Mailbox switcher — uses native <select> so mobile OS picker works reliably */}
-			{allMailboxes.length > 1 && (
-				<div className="px-3 pt-2 pb-1">
-					<select
-						aria-label="Switch mailbox"
-						value={mailboxId || ""}
-						className="w-full rounded-md border border-kumo-line bg-kumo-recessed text-kumo-default text-sm px-3 py-2 appearance-none cursor-pointer"
-						onChange={(e) => {
-							const value = e.target.value;
-							if (value && value !== mailboxId) {
-								navigate(`/mailbox/${value}/emails/inbox`);
-								closeSidebar();
-							}
-						}}
-						style={{
-							backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E")`,
-							backgroundRepeat: 'no-repeat',
-							backgroundPosition: 'right 10px center',
-							paddingRight: '28px',
-						}}
-					>
-						{allMailboxes.map((mb) => (
-							<option key={mb.id} value={mb.id}>
-								{mb.email}
-							</option>
-						))}
-					</select>
-				</div>
-			)}
 
 			{/* Compose */}
 			<div className="px-3 py-3">
@@ -255,6 +221,49 @@ export default function Sidebar() {
 				)}
 			</nav>
 
+			{/* Bottom section: Mailbox switcher + Back to Mailboxes */}
+			<div className="border-t border-kumo-line px-3 py-3 space-y-2">
+				{/* Mailbox switcher — native <select> so mobile OS picker works */}
+				{allMailboxes.length > 1 && (
+					<select
+						aria-label="Switch mailbox"
+						value={mailboxId || ""}
+						className="w-full rounded-md border border-kumo-line bg-kumo-recessed text-kumo-default text-sm px-3 py-2 appearance-none cursor-pointer"
+						onChange={(e) => {
+							const value = e.target.value;
+							if (value && value !== mailboxId) {
+								navigate(`/mailbox/${value}/emails/inbox`);
+								closeSidebar();
+							}
+						}}
+						style={{
+							backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E")`,
+							backgroundRepeat: 'no-repeat',
+							backgroundPosition: 'right 10px center',
+							paddingRight: '28px',
+						}}
+					>
+						{allMailboxes.map((mb) => (
+							<option key={mb.id} value={mb.id}>
+								{mb.email}
+							</option>
+						))}
+					</select>
+				)}
+
+				{/* Back to mailbox list */}
+				<button
+					type="button"
+					onClick={() => {
+						navigate("/");
+						closeSidebar();
+					}}
+					className="flex items-center gap-1.5 text-kumo-subtle text-sm hover:text-kumo-default transition-colors cursor-pointer bg-transparent border-0 p-0 w-full"
+				>
+					<CaretLeftIcon size={14} />
+					<span>Mailboxes</span>
+				</button>
+			</div>
 
 			{/* Create folder dialog */}
 			<Dialog.Root
