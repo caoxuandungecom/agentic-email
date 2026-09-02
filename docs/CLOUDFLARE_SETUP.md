@@ -47,9 +47,12 @@ Hệ thống sử dụng tính năng **Email Routing** của Cloudflare để "h
 
 ---
 
-## 3. Cập nhật Biến môi trường (Tùy chọn)
-Trong mã nguồn của bạn có định nghĩa biến `DOMAINS` và `EMAIL_ADDRESSES` để phục vụ cho các logic nhận diện nội bộ của Worker.
-- Đừng quên vào Cloudflare Dashboard > `agentic-inbox` > **Settings** > **Variables and Secrets** để bổ sung tên miền mới của bạn vào biến môi trường này nếu cần.
+## 3. Cập nhật Biến môi trường
+
+Trong mã nguồn của bạn có định nghĩa biến `DOMAINS` và `EMAIL_ADDRESSES` để phục vụ cho các logic nhận diện nội bộ của Worker. Bạn có 2 cách để cập nhật:
+
+- **Cách 1 (Khuyên dùng):** Sửa trực tiếp trong file `wrangler.jsonc` trên mã nguồn, sau đó lưu lại và đẩy code lên GitHub. Hệ thống (GitHub Actions) sẽ tự động deploy và cập nhật biến này lên Cloudflare.
+- **Cách 2:** Vào trực tiếp Cloudflare Dashboard > `agentic-inbox` > **Settings** > **Variables and Secrets** để bổ sung tên miền mới của bạn vào biến môi trường.
 
 ---
 
