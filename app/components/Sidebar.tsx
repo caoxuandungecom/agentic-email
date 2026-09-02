@@ -125,7 +125,7 @@ export default function Sidebar() {
 	return (
 		<aside className="h-full w-64 bg-kumo-recessed flex flex-col shrink-0 border-r border-kumo-line">
 			{/* Brand title */}
-			<div className="px-4 pt-4 pb-2">
+			<div className="px-4 pt-4 pb-6">
 				<div className="text-lg font-bold text-kumo-default tracking-tight">
 					Whichapp - Agentic Email
 				</div>
