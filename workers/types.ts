@@ -3,6 +3,6 @@
 //     https://opensource.org/licenses/Apache-2.0
 
 export interface Env extends Cloudflare.Env {
-	APP_PASSWORD?: string;
-	JWT_SECRET?: string;
+	APP_PASSWORD: string;
+	JWT_SECRET: string;
 }

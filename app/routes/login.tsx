@@ -28,7 +28,7 @@ export default function LoginPage() {
 			});
 			
 			if (!res.ok) {
-				const data = await res.json().catch(() => ({}));
+				const data = (await res.json().catch(() => ({}))) as any;
 				setError(data.error || "Invalid credentials");
 				setIsSubmitting(false);
 				return;
