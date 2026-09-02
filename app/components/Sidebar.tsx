@@ -2,10 +2,11 @@
 // Licensed under the Apache 2.0 license found in the LICENSE file or at:
 //     https://opensource.org/licenses/Apache-2.0
 
-import { Badge, Button, Dialog, Input, Tooltip } from "@cloudflare/kumo";
+import { Badge, Button, Dialog, Input, Select, Tooltip } from "@cloudflare/kumo";
 import {
 	ArchiveIcon,
 	CaretLeftIcon,
+	CaretUpDownIcon,
 	FileIcon,
 	FolderIcon,
 	PaperPlaneTiltIcon,
@@ -18,7 +19,7 @@ import { useMemo, useState } from "react";
 import { NavLink, useNavigate, useParams } from "react-router";
 import { Folders, SYSTEM_FOLDER_IDS } from "shared/folders";
 import { useCreateFolder, useFolders } from "~/queries/folders";
-import { useMailbox } from "~/queries/mailboxes";
+import { useMailbox, useMailboxes } from "~/queries/mailboxes";
 import { useUIStore } from "~/hooks/useUIStore";
 
 const FOLDER_ICONS: Record<string, React.ReactNode> = {
@@ -80,6 +81,7 @@ export default function Sidebar() {
 	const createFolderMutation = useCreateFolder();
 	const { startCompose, closeSidebar } = useUIStore();
 	const { data: currentMailbox } = useMailbox(mailboxId);
+	const { data: allMailboxes = [] } = useMailboxes();
 	const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
 	const [newFolderName, setNewFolderName] = useState("");
 
@@ -222,6 +224,29 @@ export default function Sidebar() {
 					</div>
 				)}
 			</nav>
+
+			{/* Mailbox switcher */}
+			{allMailboxes.length > 1 && (
+				<div className="px-3 py-3">
+					<Select
+						aria-label="Switch mailbox"
+						value={mailboxId || ""}
+						className="w-full"
+						onValueChange={(value) => {
+							if (value && value !== mailboxId) {
+								navigate(`/mailbox/${value}/emails/inbox`);
+								closeSidebar();
+							}
+						}}
+					>
+						{allMailboxes.map((mb) => (
+							<Select.Option key={mb.id} value={mb.id}>
+								{mb.email}
+							</Select.Option>
+						))}
+					</Select>
+				</div>
+			)}
 
 			{/* Create folder dialog */}
 			<Dialog.Root

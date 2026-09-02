@@ -37,6 +37,10 @@ interface UIState {
 	isAgentPanelOpen: boolean;
 	toggleAgentPanel: () => void;
 
+	// Theme
+	theme: "light" | "dark";
+	toggleTheme: () => void;
+
 	// Legacy dialog support (kept for non-split views)
 	isComposeModalOpen: boolean;
 	openComposeModal: (options?: ComposeOptions) => void;
@@ -51,6 +55,7 @@ export const useUIStore = create<UIState>((set, get) => ({
 	isComposeModalOpen: false,
 	isSidebarOpen: false,
 	isAgentPanelOpen: true,
+	theme: (typeof window !== "undefined" ? localStorage.getItem("theme") as "light" | "dark" : null) || "light",
 
 	selectEmail: (id) => set({ selectedEmailId: id, isComposing: false }),
 
@@ -83,6 +88,15 @@ export const useUIStore = create<UIState>((set, get) => ({
 	toggleSidebar: () => set({ isSidebarOpen: !get().isSidebarOpen }),
 
 	toggleAgentPanel: () => set({ isAgentPanelOpen: !get().isAgentPanelOpen }),
+
+	toggleTheme: () => {
+		const next = get().theme === "light" ? "dark" : "light";
+		if (typeof window !== "undefined") {
+			localStorage.setItem("theme", next);
+			document.documentElement.setAttribute("data-mode", next);
+		}
+		set({ theme: next });
+	},
 
 	openComposeModal: (options) =>
 		set({

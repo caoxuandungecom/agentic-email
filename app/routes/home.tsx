@@ -44,7 +44,7 @@ export default function HomeRoute() {
 	const emailAddresses = configData?.emailAddresses ?? [];
 
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
-	const [newPrefix, setNewPrefix] = useState("");
+	const [emailInput, setEmailInput] = useState("");
 	const [selectedDomain, setSelectedDomain] = useState("");
 	const [newName, setNewName] = useState("");
 	const [isCreating, setIsCreating] = useState(false);
@@ -92,18 +92,35 @@ export default function HomeRoute() {
 	const handleCreate = async (e: FormEvent) => {
 		e.preventDefault();
 		setCreateError(null);
-		if (!newPrefix || !selectedDomain) {
-			setCreateError("Please fill in all fields");
-			return;
+		
+		let email = "";
+		const trimmedInput = emailInput.trim();
+
+		if (domains.length > 0) {
+			if (!trimmedInput || !selectedDomain) {
+				setCreateError("Please fill in all fields");
+				return;
+			}
+			email = `${trimmedInput}@${selectedDomain}`;
+		} else {
+			if (!trimmedInput) {
+				setCreateError("Please enter an email address");
+				return;
+			}
+			if (!trimmedInput.includes("@")) {
+				setCreateError("Please enter a valid full email address");
+				return;
+			}
+			email = trimmedInput;
 		}
-		const email = `${newPrefix}@${selectedDomain}`;
-		const name = newName || newPrefix;
+
+		const name = newName || trimmedInput.split('@')[0];
 		setIsCreating(true);
 		try {
 			await createMailbox.mutateAsync({ email, name });
 			toastManager.add({ title: "Mailbox created successfully!" });
 			setIsCreateOpen(false);
-			setNewPrefix("");
+			setEmailInput("");
 			setNewName("");
 		} catch (err: unknown) {
 			const message = (err instanceof Error ? err.message : null) || "Failed to create mailbox";
@@ -257,37 +274,53 @@ export default function HomeRoute() {
 								Email Address
 							</span>
 							<div className="flex items-center gap-2">
-								<div className="flex-1">
-									<Input
-										aria-label="Address prefix"
-										placeholder="info"
-										size="sm"
-										value={newPrefix}
-										onChange={(e) => setNewPrefix(e.target.value)}
-										required
-									/>
-								</div>
-								<span className="text-sm text-kumo-subtle">@</span>
-								{domains.length > 1 ? (
-									<div className="flex-1">
-							<Select
-								aria-label="Domain"
-								value={selectedDomain}
-								onValueChange={(value) => {
-									if (value) setSelectedDomain(value);
-								}}
-							>
-											{domains.map((d) => (
-												<Select.Option key={d} value={d}>
-													{d}
-												</Select.Option>
-											))}
-										</Select>
-									</div>
+								{domains.length > 0 ? (
+									<>
+										<div className="flex-1">
+											<Input
+												aria-label="Address prefix"
+												placeholder="info"
+												size="sm"
+												value={emailInput}
+												onChange={(e) => setEmailInput(e.target.value)}
+												required
+											/>
+										</div>
+										<span className="text-sm text-kumo-subtle">@</span>
+										{domains.length > 1 ? (
+											<div className="flex-1">
+												<Select
+													aria-label="Domain"
+													value={selectedDomain}
+													onValueChange={(value) => {
+														if (value) setSelectedDomain(value);
+													}}
+												>
+													{domains.map((d) => (
+														<Select.Option key={d} value={d}>
+															{d}
+														</Select.Option>
+													))}
+												</Select>
+											</div>
+										) : (
+											<span className="text-sm text-kumo-subtle">
+												{selectedDomain || "no domain"}
+											</span>
+										)}
+									</>
 								) : (
-									<span className="text-sm text-kumo-subtle">
-										{selectedDomain || "no domain"}
-									</span>
+									<div className="flex-1">
+										<Input
+											aria-label="Email address"
+											placeholder="info@yourdomain.com"
+											type="email"
+											size="sm"
+											value={emailInput}
+											onChange={(e) => setEmailInput(e.target.value)}
+											required
+										/>
+									</div>
 								)}
 							</div>
 						</div>
@@ -311,7 +344,7 @@ export default function HomeRoute() {
 								variant="primary"
 								size="sm"
 								loading={isCreating}
-								disabled={!selectedDomain}
+								disabled={domains.length > 0 && !selectedDomain}
 							>
 								Create
 							</Button>

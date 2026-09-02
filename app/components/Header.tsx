@@ -3,7 +3,7 @@
 //     https://opensource.org/licenses/Apache-2.0
 
 import { Button, Input, Tooltip } from "@cloudflare/kumo";
-import { GearSixIcon, ListIcon, MagnifyingGlassIcon, RobotIcon, XIcon } from "@phosphor-icons/react";
+import { GearSixIcon, ListIcon, MagnifyingGlassIcon, MoonIcon, RobotIcon, SunIcon, XIcon } from "@phosphor-icons/react";
 import { type KeyboardEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import { useUIStore } from "~/hooks/useUIStore";
@@ -15,7 +15,7 @@ export default function Header() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [searchParams] = useSearchParams();
-	const { toggleSidebar, toggleAgentPanel, isAgentPanelOpen } = useUIStore();
+	const { toggleSidebar, toggleAgentPanel, isAgentPanelOpen, theme, toggleTheme } = useUIStore();
 
 	// Sync search input with URL query param so it stays populated
 	const urlQuery = searchParams.get("q") || "";
@@ -127,6 +127,15 @@ export default function Header() {
 						onClick={toggleAgentPanel}
 						aria-label="Toggle agent panel"
 						className="hidden lg:inline-flex"
+					/>
+				</Tooltip>
+				<Tooltip content={theme === "light" ? "Dark mode" : "Light mode"} side="bottom" asChild>
+					<Button
+						variant="ghost"
+						shape="square"
+						icon={theme === "light" ? <MoonIcon size={20} /> : <SunIcon size={20} />}
+						onClick={toggleTheme}
+						aria-label="Toggle theme"
 					/>
 				</Tooltip>
 				<Tooltip content="Settings" side="bottom" asChild>

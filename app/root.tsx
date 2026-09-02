@@ -94,6 +94,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			</head>
 			<body className="bg-kumo-recessed text-kumo-default antialiased">
 				{children}
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `(function(){var t=localStorage.getItem("theme");if(t==="dark"){document.documentElement.setAttribute("data-mode","dark")}})();`,
+					}}
+				/>
 				<ScrollRestoration />
 				<Scripts />
 			</body>
