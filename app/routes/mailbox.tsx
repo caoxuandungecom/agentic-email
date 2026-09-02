@@ -69,11 +69,22 @@ export default function MailboxRoute() {
 				</main>
 			</div>
 
-			{/* Agent + MCP sidebar -- togglable on desktop */}
+			{/* Agent + MCP sidebar */}
 			{isAgentPanelOpen && (
-				<div className="hidden lg:flex w-[380px] shrink-0 border-l border-kumo-line flex-col bg-kumo-base overflow-hidden">
-					<AgentSidebar />
-				</div>
+				<>
+					{/* Mobile overlay backdrop */}
+					<div
+						className="fixed inset-0 z-30 bg-black/30 lg:hidden"
+						onClick={closePanel}
+						onKeyDown={(e) => e.key === "Escape" && closePanel()}
+						role="button"
+						tabIndex={-1}
+						aria-label="Close agent panel"
+					/>
+					<div className="fixed inset-y-0 right-0 z-40 w-[85vw] sm:w-[380px] lg:relative lg:z-0 lg:w-[380px] shrink-0 border-l border-kumo-line flex flex-col bg-kumo-base overflow-hidden shadow-2xl lg:shadow-none">
+						<AgentSidebar />
+					</div>
+				</>
 			)}
 
 			<ComposeEmail />
