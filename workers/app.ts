@@ -42,42 +42,70 @@ function getAccessUrls(teamDomain: string) {
 // Main app that wraps the API and adds React Router fallback
 const app = new Hono<{ Bindings: Env }>();
 
+import { getCookie, setCookie, deleteCookie } from "hono/cookie";
+import { SignJWT } from "jose";
+
 // Cloudflare Access JWT validation middleware (production only)
 app.use("*", async (c, next) => {
-	// Skip validation in development
-	if (import.meta.env.DEV) {
+	// Skip validation in development if desired, but we want local auth to work
+	// so we will enforce it everywhere except public routes.
+	const url = new URL(c.req.url);
+	const pathname = url.pathname;
+
+	// Allow public routes and Vite HMR
+	const publicPaths = ["/login", "/api/auth/login", "/api/auth/logout", "/@vite", "/__vite", "/@fs", "/@id"];
+	if (
+		c.req.header("upgrade") === "websocket" ||
+		publicPaths.some((p) => pathname.startsWith(p)) ||
+		pathname.match(/\.(js|css|svg|ico|png|jpg|woff2?|tsx?)$/)
+	) {
 		return next();
 	}
 
-	const { POLICY_AUD, TEAM_DOMAIN } = c.env;
-
-	// Fail closed in production if Access is not configured.
-	if (!POLICY_AUD || !TEAM_DOMAIN) {
-		return c.text(
-			"Cloudflare Access must be configured in production. Set POLICY_AUD and TEAM_DOMAIN.",
-			500,
-		);
-	}
-
-	const token = c.req.header("cf-access-jwt-assertion");
-	if (!token) {
-		return c.text("Missing required CF Access JWT", 403);
+	const cookie = getCookie(c, "session");
+	if (!cookie) {
+		return c.redirect("/login");
 	}
 
 	try {
-		const { issuer, certsUrl } = getAccessUrls(TEAM_DOMAIN);
-		const JWKS = createRemoteJWKSet(certsUrl);
-		await jwtVerify(token, JWKS, {
-			issuer,
-			audience: POLICY_AUD,
-		});
+		const secret = new TextEncoder().encode(c.env.JWT_SECRET || "default-secret");
+		await jwtVerify(cookie, secret);
 	} catch {
-		return c.text("Invalid or expired Access token", 403);
+		return c.redirect("/login");
 	}
 
-	// Authorization model note: once a teammate passes the shared Cloudflare
-	// Access policy, they can access all mailboxes in this app by design.
 	return next();
+});
+
+// Authentication endpoints
+app.post("/api/auth/login", async (c) => {
+	const { password } = await c.req.json();
+	const expectedPassword = c.env.APP_PASSWORD;
+
+	if (!expectedPassword || password !== expectedPassword) {
+		return c.json({ error: "Invalid credentials" }, 401);
+	}
+
+	const secret = new TextEncoder().encode(c.env.JWT_SECRET || "default-secret");
+	const token = await new SignJWT({ role: "admin" })
+		.setProtectedHeader({ alg: "HS256" })
+		.setExpirationTime("30d")
+		.sign(secret);
+
+	setCookie(c, "session", token, {
+		httpOnly: true,
+		secure: !import.meta.env.DEV,
+		sameSite: "Lax",
+		path: "/",
+		maxAge: 60 * 60 * 24 * 30, // 30 days
+	});
+
+	return c.json({ ok: true });
+});
+
+app.post("/api/auth/logout", async (c) => {
+	deleteCookie(c, "session", { path: "/" });
+	return c.json({ ok: true });
 });
 
 // MCP server endpoint — used by AI coding tools (ProtoAgent, Claude Code, Cursor, etc.)

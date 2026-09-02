@@ -3,7 +3,7 @@
 //     https://opensource.org/licenses/Apache-2.0
 
 import { Button, Input, Tooltip } from "@cloudflare/kumo";
-import { GearSixIcon, ListIcon, MagnifyingGlassIcon, MoonIcon, RobotIcon, SunIcon, XIcon } from "@phosphor-icons/react";
+import { GearSixIcon, ListIcon, MagnifyingGlassIcon, MoonIcon, RobotIcon, SunIcon, XIcon, SignOutIcon } from "@phosphor-icons/react";
 import { type KeyboardEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import { useUIStore } from "~/hooks/useUIStore";
@@ -24,6 +24,11 @@ export default function Header() {
 			setSearchQuery(urlQuery);
 		}
 	}, [urlQuery, location.pathname]);
+
+	const handleLogout = async () => {
+		await fetch("/api/auth/logout", { method: "POST" });
+		window.location.href = "/login";
+	};
 
 	const performSearch = () => {
 		if (mailboxId && searchQuery.trim()) {
@@ -151,6 +156,15 @@ export default function Header() {
 							)
 						}
 						aria-label="Settings"
+					/>
+				</Tooltip>
+				<Tooltip content="Logout" side="bottom" asChild>
+					<Button
+						variant="ghost"
+						shape="square"
+						icon={<SignOutIcon size={20} />}
+						onClick={handleLogout}
+						aria-label="Logout"
 					/>
 				</Tooltip>
 			</div>
