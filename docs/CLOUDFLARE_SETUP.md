@@ -47,16 +47,8 @@ Hệ thống sử dụng tính năng **Email Routing** của Cloudflare để "h
 
 ---
 
-## 3. Cập nhật Biến môi trường
 
-Trong mã nguồn của bạn có định nghĩa biến `DOMAINS` và `EMAIL_ADDRESSES` để phục vụ cho các logic nhận diện nội bộ của Worker. Bạn có 2 cách để cập nhật:
-
-- **Cách 1 (Khuyên dùng):** Sửa trực tiếp trong file `wrangler.jsonc` trên mã nguồn, sau đó lưu lại và đẩy code lên GitHub. Hệ thống (GitHub Actions) sẽ tự động deploy và cập nhật biến này lên Cloudflare.
-- **Cách 2:** Vào trực tiếp Cloudflare Dashboard > `agentic-inbox` > **Settings** > **Variables and Secrets** để bổ sung tên miền mới của bạn vào biến môi trường.
-
----
-
-## 4. Kiểm tra Khả năng Gửi thư (Deliverability Test)
+## 3. Kiểm tra Khả năng Gửi thư (Deliverability Test)
 Sau khi hoàn tất cấu hình DNS, hãy dùng công cụ miễn phí **Mail-Tester** để kiểm tra xem email có bị đánh dấu Spam hay không.
 
 1. Truy cập [mail-tester.com](https://www.mail-tester.com/).
@@ -75,7 +67,7 @@ Sau khi hoàn tất cấu hình DNS, hãy dùng công cụ miễn phí **Mail-Te
 
 ---
 
-## 5. Khởi động Uy tín với Gmail (Gmail Warm-up)
+## 4. Khởi động Uy tín với Gmail (Gmail Warm-up)
 Gmail rất khắt khe với tên miền mới chưa có lịch sử gửi thư. Ngay cả khi Mail-Tester cho **10/10**, Gmail vẫn có thể chặn email nếu tên miền quá mới. Hãy làm các bước sau để "phá băng":
 
 1. **Đăng ký Google Postmaster Tools (Miễn phí):**
