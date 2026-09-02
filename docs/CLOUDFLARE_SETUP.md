@@ -38,7 +38,7 @@ Hệ thống sử dụng tính năng **Email Routing** của Cloudflare để "h
 2. Trở lại màn hình chính của tài khoản Cloudflare, vào mục **Workers & Pages**.
 3. Chọn ứng dụng Worker có tên là `agentic-inbox`.
 4. Chuyển sang tab **Settings** (Cài đặt) > **Bindings**.
-5. Tìm đến mục Binding có tên là **Send Email** (Gửi Email).
+5. Tìm đến mục Binding có tên là **Email Sending**.
 6. Ở mục cấu hình binding này, bạn cần phải nhập thêm Tên miền mới của bạn vào ô **Allowed Senders** (Người gửi được phép).
 7. Bấm **Save and Deploy** (Lưu và Triển khai) để Worker nhận quyền mới.
 
