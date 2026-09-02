@@ -2,11 +2,11 @@
 // Licensed under the Apache 2.0 license found in the LICENSE file or at:
 //     https://opensource.org/licenses/Apache-2.0
 
-import { Badge, Button, Dialog, Input, Select, Tooltip } from "@cloudflare/kumo";
+import { Badge, Button, Dialog, Input, Tooltip } from "@cloudflare/kumo";
 import {
 	ArchiveIcon,
 	CaretLeftIcon,
-	CaretUpDownIcon,
+
 	FileIcon,
 	FolderIcon,
 	PaperPlaneTiltIcon,
@@ -147,26 +147,33 @@ export default function Sidebar() {
 				</div>
 			</div>
 
-			{/* Mailbox switcher */}
+			{/* Mailbox switcher — uses native <select> so mobile OS picker works reliably */}
 			{allMailboxes.length > 1 && (
 				<div className="px-3 pt-2 pb-1">
-					<Select
+					<select
 						aria-label="Switch mailbox"
 						value={mailboxId || ""}
-						className="w-full"
-						onValueChange={(value) => {
+						className="w-full rounded-md border border-kumo-line bg-kumo-recessed text-kumo-default text-sm px-3 py-2 appearance-none cursor-pointer"
+						onChange={(e) => {
+							const value = e.target.value;
 							if (value && value !== mailboxId) {
 								navigate(`/mailbox/${value}/emails/inbox`);
 								closeSidebar();
 							}
 						}}
+						style={{
+							backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E")`,
+							backgroundRepeat: 'no-repeat',
+							backgroundPosition: 'right 10px center',
+							paddingRight: '28px',
+						}}
 					>
 						{allMailboxes.map((mb) => (
-							<Select.Option key={mb.id} value={mb.id}>
+							<option key={mb.id} value={mb.id}>
 								{mb.email}
-							</Select.Option>
+							</option>
 						))}
-					</Select>
+					</select>
 				</div>
 			)}
 
