@@ -147,6 +147,29 @@ export default function Sidebar() {
 				</div>
 			</div>
 
+			{/* Mailbox switcher */}
+			{allMailboxes.length > 1 && (
+				<div className="px-3 pt-2 pb-1">
+					<Select
+						aria-label="Switch mailbox"
+						value={mailboxId || ""}
+						className="w-full"
+						onValueChange={(value) => {
+							if (value && value !== mailboxId) {
+								navigate(`/mailbox/${value}/emails/inbox`);
+								closeSidebar();
+							}
+						}}
+					>
+						{allMailboxes.map((mb) => (
+							<Select.Option key={mb.id} value={mb.id}>
+								{mb.email}
+							</Select.Option>
+						))}
+					</Select>
+				</div>
+			)}
+
 			{/* Compose */}
 			<div className="px-3 py-3">
 				<Button
@@ -225,28 +248,6 @@ export default function Sidebar() {
 				)}
 			</nav>
 
-			{/* Mailbox switcher */}
-			{allMailboxes.length > 1 && (
-				<div className="px-3 py-3">
-					<Select
-						aria-label="Switch mailbox"
-						value={mailboxId || ""}
-						className="w-full"
-						onValueChange={(value) => {
-							if (value && value !== mailboxId) {
-								navigate(`/mailbox/${value}/emails/inbox`);
-								closeSidebar();
-							}
-						}}
-					>
-						{allMailboxes.map((mb) => (
-							<Select.Option key={mb.id} value={mb.id}>
-								{mb.email}
-							</Select.Option>
-						))}
-					</Select>
-				</div>
-			)}
 
 			{/* Create folder dialog */}
 			<Dialog.Root
