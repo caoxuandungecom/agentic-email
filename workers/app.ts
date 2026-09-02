@@ -83,11 +83,11 @@ app.post("/api/auth/login", async (c) => {
 	const expectedPassword = c.env.APP_PASSWORD;
 
 	if (!expectedPassword) {
-		return c.json({ error: "Lỗi máy chủ: Chưa cấu hình biến APP_PASSWORD trên Cloudflare" }, 500);
+		return c.json({ error: "Server Error: APP_PASSWORD is not configured on Cloudflare" }, 500);
 	}
 
 	if (password !== expectedPassword) {
-		return c.json({ error: "Mật khẩu không chính xác" }, 401);
+		return c.json({ error: "Invalid credentials" }, 401);
 	}
 
 	const secret = new TextEncoder().encode(c.env.JWT_SECRET || "default-secret");

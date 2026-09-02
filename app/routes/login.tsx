@@ -4,8 +4,8 @@ import type { MetaFunction } from "react-router";
 
 export const meta: MetaFunction = () => {
 	return [
-		{ title: "Login - Agentic Inbox" },
-		{ name: "description", content: "Secure Access to Agentic Inbox" },
+		{ title: "Login - Agentic Email" },
+		{ name: "description", content: "Secure Access to Agentic Email" },
 	];
 };
 
@@ -47,7 +47,7 @@ export default function LoginPage() {
 		<div className="login-page">
 			<div className="login-card">
 				<div className="login-logo">
-					<h1>Agentic Inbox</h1>
+					<h1>Agentic Email</h1>
 					<p className="login-subtitle">Secure Access</p>
 				</div>
 
