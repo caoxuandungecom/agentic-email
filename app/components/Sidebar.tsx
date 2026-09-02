@@ -131,8 +131,8 @@ export default function Sidebar() {
 				</div>
 			</div>
 
-			{/* Current mailbox identity */}
-			<div className="px-4 pb-1">
+			{/* Current mailbox identity (Hidden as per user request, keep code for future) */}
+			<div className="hidden px-4 pb-1">
 				<div className="px-1">
 					<div className="text-sm font-semibold text-kumo-default truncate">
 						{displayName}
