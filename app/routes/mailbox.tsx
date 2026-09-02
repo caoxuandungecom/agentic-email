@@ -21,6 +21,7 @@ export default function MailboxRoute() {
 		closeSidebar,
 		isAgentPanelOpen,
 		closePanel,
+		closeAgentPanel,
 		closeComposeModal,
 	} = useUIStore();
 
@@ -75,8 +76,8 @@ export default function MailboxRoute() {
 					{/* Mobile overlay backdrop */}
 					<div
 						className="fixed inset-0 z-30 bg-black/30 lg:hidden"
-						onClick={closePanel}
-						onKeyDown={(e) => e.key === "Escape" && closePanel()}
+						onClick={closeAgentPanel}
+						onKeyDown={(e) => e.key === "Escape" && closeAgentPanel()}
 						role="button"
 						tabIndex={-1}
 						aria-label="Close agent panel"

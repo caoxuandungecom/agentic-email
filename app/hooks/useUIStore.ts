@@ -36,6 +36,7 @@ interface UIState {
 	// Agent panel
 	isAgentPanelOpen: boolean;
 	toggleAgentPanel: () => void;
+	closeAgentPanel: () => void;
 
 	// Theme
 	theme: "light" | "dark";
@@ -54,7 +55,7 @@ export const useUIStore = create<UIState>((set, get) => ({
 	composeOptions: { mode: "new", originalEmail: null },
 	isComposeModalOpen: false,
 	isSidebarOpen: false,
-	isAgentPanelOpen: true,
+	isAgentPanelOpen: typeof window !== "undefined" ? window.innerWidth >= 1024 : true,
 	theme: (typeof window !== "undefined" ? localStorage.getItem("theme") as "light" | "dark" : null) || "light",
 
 	selectEmail: (id) => set({ selectedEmailId: id, isComposing: false }),
@@ -88,6 +89,7 @@ export const useUIStore = create<UIState>((set, get) => ({
 	toggleSidebar: () => set({ isSidebarOpen: !get().isSidebarOpen }),
 
 	toggleAgentPanel: () => set({ isAgentPanelOpen: !get().isAgentPanelOpen }),
+	closeAgentPanel: () => set({ isAgentPanelOpen: false }),
 
 	toggleTheme: () => {
 		const next = get().theme === "light" ? "dark" : "light";
