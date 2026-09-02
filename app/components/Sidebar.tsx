@@ -222,7 +222,7 @@ export default function Sidebar() {
 			</nav>
 
 			{/* Bottom section: Mailbox switcher + Back to Mailboxes */}
-			<div className="px-3 py-3 space-y-2">
+			<div className="px-3 py-3 space-y-4">
 				{/* Mailbox switcher */}
 				{allMailboxes.length > 1 && (
 					<>
