@@ -124,6 +124,15 @@ export default function Header() {
 			)}
 
 			<div className="flex items-center gap-1 ml-auto shrink-0">
+				<Tooltip content={theme === "light" ? "Dark mode" : "Light mode"} side="bottom" asChild>
+					<Button
+						variant="ghost"
+						shape="square"
+						icon={theme === "light" ? <MoonIcon size={20} /> : <SunIcon size={20} />}
+						onClick={toggleTheme}
+						aria-label="Toggle theme"
+					/>
+				</Tooltip>
 				<Tooltip content={isAgentPanelOpen ? "Hide agent panel" : "Show agent panel"} side="bottom" asChild>
 					<Button
 						variant={isAgentPanelOpen ? "secondary" : "ghost"}
@@ -132,15 +141,6 @@ export default function Header() {
 						onClick={toggleAgentPanel}
 						aria-label="Toggle agent panel"
 						className="hidden lg:inline-flex"
-					/>
-				</Tooltip>
-				<Tooltip content={theme === "light" ? "Dark mode" : "Light mode"} side="bottom" asChild>
-					<Button
-						variant="ghost"
-						shape="square"
-						icon={theme === "light" ? <MoonIcon size={20} /> : <SunIcon size={20} />}
-						onClick={toggleTheme}
-						aria-label="Toggle theme"
 					/>
 				</Tooltip>
 				<Tooltip content="Settings" side="bottom" asChild>
