@@ -5,6 +5,9 @@
 > [!WARNING]
 > Nếu bạn bỏ qua một trong các bước này, email gửi đến sẽ không vào được Inbox hoặc email bạn gửi đi sẽ bị đánh dấu là Spam.
 
+> [!TIP]
+> 🤖 **TỰ ĐỘNG HÓA:** Trợ lý AI của Whichapp có thể **tự động thiết lập 100% Bước 1** và **cấu hình DNS ở Bước 2**. Bạn chỉ cần nhắn: *"Hãy thiết lập Cloudflare cho domain xyz.com"*. Bạn chỉ phải làm thủ công bước Onboard tính năng Email Sending thôi!
+
 ---
 
 ## 1. Cấu hình Inbound (Nhận Email vào Hòm thư)
