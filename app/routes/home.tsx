@@ -3,6 +3,7 @@
 //     https://opensource.org/licenses/Apache-2.0
 
 import {
+	Badge,
 	Button,
 	Dialog,
 	Empty,
@@ -12,9 +13,9 @@ import {
 	Text,
 	useKumoToastManager,
 } from "@cloudflare/kumo";
-import { EnvelopeIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
+import { EnvelopeIcon, PlusIcon, TrashIcon, TrayIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Link as RouterLink } from "react-router";
 import api from "~/services/api";
 import {
@@ -30,7 +31,9 @@ export function meta() {
 
 export default function HomeRoute() {
 	const toastManager = useKumoToastManager();
-	const { data: mailboxes = [], refetch: refetchMailboxes, isFetched: mailboxesFetched } = useMailboxes();
+	const { data: mailboxes = [], refetch: refetchMailboxes, isFetched: mailboxesFetched } = useMailboxes({
+		refetchInterval: 30_000,
+	});
 	const createMailbox = useCreateMailbox();
 	const deleteMailbox = useDeleteMailbox();
 
@@ -145,26 +148,58 @@ export default function HomeRoute() {
 		}
 	};
 
+	const [searchQuery, setSearchQuery] = useState("");
+
 	const isConfigured = emailAddresses.length > 0;
-	const accounts = isConfigured
-		? emailAddresses.map((addr) => ({
-				id: addr,
-				email: addr,
-				name: addr.split("@")[0] || addr,
-			}))
-		: mailboxes;
+
+	const mailboxMap = useMemo(() => {
+		const map = new Map<string, (typeof mailboxes)[number]>();
+		for (const m of mailboxes) {
+			map.set(m.email.toLowerCase(), m);
+		}
+		return map;
+	}, [mailboxes]);
+
+	const allAccounts = useMemo(() => {
+		if (isConfigured) {
+			return emailAddresses.map((addr) => {
+				const found = mailboxMap.get(addr.toLowerCase());
+				return {
+					id: addr,
+					email: addr,
+					name: addr.split("@")[0] || addr,
+					unreadCount: found?.unreadCount ?? 0,
+				};
+			});
+		}
+		return mailboxes;
+	}, [isConfigured, emailAddresses, mailboxMap, mailboxes]);
+
+	const accounts = useMemo(() => {
+		if (!searchQuery.trim()) return allAccounts;
+		const q = searchQuery.toLowerCase().trim();
+		return allAccounts.filter((acc) => acc.email.toLowerCase().includes(q));
+	}, [allAccounts, searchQuery]);
 
 	const isLoading = !configData;
 
 	return (
 		<div className="min-h-screen bg-kumo-recessed">
 			<div className="mx-auto max-w-2xl px-4 py-8 md:px-6 md:py-16">
-				<div className="mb-8">
+				<div className="mb-6">
 					<div className="flex items-center justify-between">
-						<h1 className="text-2xl font-bold text-kumo-default">Mailboxes</h1>
+						<div className="flex items-center gap-2.5">
+							<h1 className="text-2xl font-bold text-kumo-default">Mailboxes</h1>
+							{allAccounts.length > 0 && (
+								<span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-kumo-fill text-kumo-subtle">
+									{allAccounts.length}
+								</span>
+							)}
+						</div>
 						{!isConfigured && (
 							<Button
 								variant="primary"
+								size="sm"
 								icon={<PlusIcon size={16} />}
 								onClick={() => setIsCreateOpen(true)}
 							>
@@ -176,6 +211,17 @@ export default function HomeRoute() {
 						<p className="text-sm text-kumo-subtle mt-1">
 							{domains.join(", ")}
 						</p>
+					)}
+					{allAccounts.length > 5 && (
+						<div className="mt-4">
+							<Input
+								placeholder="Filter mailboxes by email address..."
+								size="sm"
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								aria-label="Filter mailboxes"
+							/>
+						</div>
 					)}
 				</div>
 
@@ -189,21 +235,23 @@ export default function HomeRoute() {
 							<RouterLink
 								key={account.id}
 								to={`/mailbox/${account.id}`}
-								className={`group flex items-center gap-4 px-5 py-4 no-underline transition-colors hover:bg-kumo-tint ${
+								className={`group flex items-center gap-3 px-4 py-2.5 no-underline transition-colors hover:bg-kumo-tint ${
 									idx > 0 ? "border-t border-kumo-line" : ""
 								}`}
 							>
-								<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-kumo-fill text-sm font-bold text-kumo-default">
-									{account.name.charAt(0).toUpperCase()}
-								</div>
-								<div className="min-w-0 flex-1">
-									<div className="text-sm font-medium text-kumo-default truncate">
-										{account.name}
-									</div>
-									<div className="text-sm text-kumo-subtle">
-										{account.email}
-									</div>
-								</div>
+								<TrayIcon
+									size={18}
+									weight="regular"
+									className="text-kumo-subtle shrink-0 group-hover:text-kumo-brand transition-colors"
+								/>
+								<span className="text-sm font-medium text-kumo-default truncate flex-1">
+									{account.email}
+								</span>
+								{account.unreadCount != null && account.unreadCount > 0 && (
+									<Badge variant="secondary" className="shrink-0 font-semibold">
+										{account.unreadCount}
+									</Badge>
+								)}
 								{!isConfigured && (
 									<Button
 										variant="ghost"

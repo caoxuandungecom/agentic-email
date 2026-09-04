@@ -96,7 +96,27 @@ app.get("/api/v1/config", (c) => {
 
 app.get("/api/v1/mailboxes", async (c) => {
 	const allMailboxes = await listMailboxes(c.env.BUCKET);
-	return c.json(allMailboxes.map((m) => ({ ...m, name: m.id })));
+	const mailboxesWithStats = await Promise.all(
+		allMailboxes.map(async (m) => {
+			try {
+				const stub = c.env.MAILBOX.get(c.env.MAILBOX.idFromName(m.email));
+				const folders = await stub.getFolders();
+				const inbox = folders.find((f: any) => f.id === "inbox");
+				return {
+					...m,
+					name: m.id,
+					unreadCount: inbox?.unreadCount ?? 0,
+				};
+			} catch {
+				return {
+					...m,
+					name: m.id,
+					unreadCount: 0,
+				};
+			}
+		}),
+	);
+	return c.json(mailboxesWithStats);
 });
 
 app.post("/api/v1/mailboxes", async (c) => {
