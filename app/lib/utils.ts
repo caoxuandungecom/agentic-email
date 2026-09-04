@@ -52,6 +52,24 @@ export function toEmailListValue(addresses: string[]): string | string[] | undef
 }
 
 /**
+ * Format recipient email address(es) for display in Sent and Draft folders.
+ * Displays full email address e.g. "To: user@example.com" or "To: user1@example.com, user2@example.com".
+ */
+export function formatRecipients(recipient?: string | null): string {
+	if (!recipient) return "To: (No recipient)";
+	const emails = splitEmailList(recipient)
+		.map((entry) => {
+			const match = entry.match(/<([^>]+)>/);
+			return match ? match[1].trim() : entry.trim();
+		})
+		.filter(Boolean);
+
+	if (emails.length === 0) return "To: (No recipient)";
+	if (emails.length <= 2) return `To: ${emails.join(", ")}`;
+	return `To: ${emails.slice(0, 2).join(", ")} +${emails.length - 2}`;
+}
+
+/**
  * Convert HTML content to plain text.
  * Uses DOM APIs so must only be called client-side.
  */

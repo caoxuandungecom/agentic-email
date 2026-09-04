@@ -22,7 +22,7 @@ import { useParams } from "react-router";
 import { Folders } from "shared/folders";
 import { formatListDate } from "shared/dates";
 import MailboxSplitView from "~/components/MailboxSplitView";
-import { getSnippetText } from "~/lib/utils";
+import { formatRecipients, getSnippetText } from "~/lib/utils";
 import {
 	useDeleteEmail,
 	useEmails,
@@ -256,7 +256,12 @@ export default function EmailListRoute() {
 		}
 	};
 
+	const isSentOrDraft = folder === Folders.SENT || folder === Folders.DRAFT;
+
 	const formatParticipants = (email: Email): string => {
+		if (isSentOrDraft) {
+			return formatRecipients(email.recipient);
+		}
 		if (email.participants) {
 			const names = email.participants
 				.split(",")
